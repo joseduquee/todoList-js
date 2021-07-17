@@ -1,3 +1,4 @@
+import { countPendingTask } from "../js/componentes";
 import { Todo } from "./todo.class";
 
 
@@ -7,12 +8,14 @@ export class TodoList {
     constructor() {
            
         this.loadLocalStorage();
+        this.countPendingTask();
 
     }
 
     newTodo( todo ) {
         this.todos.push( todo );
         this.saveInLocalStorage();
+        this.countPendingTask();
 
     }
 
@@ -20,22 +23,31 @@ export class TodoList {
        
         this.todos = this.todos.filter( todo => todo.id != id );
         this.saveInLocalStorage();
+        this.countPendingTask();
     }
 
     toggleTodo( id ) {
-        for (const todo of this.todos) {
-            
-            if(todo.id == id) {
-                todo.isCompleted = !todo.isCompleted;
-                this.saveInLocalStorage();                
-                break;
+        this.todos.forEach(todo => {
+            if (todo.id == id) {
+                todo.completado = !todo.completado;
+                this.saveInLocalStorage();
+                this.countPendingTask()
             }
+        });
+    }
+
+    countPendingTask() {
+        let pendientes = 0;
+        let countBox = countPendingTask.firstElementChild;
+        for (let todo of this.todos) {
+            (!todo.completado === true) ? pendientes++ : null;
         }
+        countBox.innerHTML = pendientes;
     }
 
     deleteCompletedTask() {
         
-        this.todos = this.todos.filter( todo => !todo.isCompleted)
+        this.todos = this.todos.filter( todo => !todo.isCompleted);
         this.saveInLocalStorage();
 
     }
@@ -48,6 +60,7 @@ export class TodoList {
 
     loadLocalStorage() {
 
+
         this.todos = ( localStorage.getItem ('todo' ) ) 
                         ? JSON.parse( localStorage.getItem('todo') ) 
                         : [];
@@ -58,6 +71,5 @@ export class TodoList {
         //la primera forma
 
     }
-
 
 }
